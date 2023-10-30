@@ -73,6 +73,8 @@
         string? TranslatorConfiguration { get; set; }
 
         bool AutoApplyExistingTranslations { get; }
+
+        string IgnoreListLocation { get; set; }
     }
 
     public abstract class Configuration : ConfigurationBase, IConfiguration
@@ -145,5 +147,8 @@
 
         [DefaultValue(true)]
         public bool AutoApplyExistingTranslations { get; set; }
+
+        [DefaultValue(null)]
+        public string IgnoreListLocation { get; set; }
     }
 }

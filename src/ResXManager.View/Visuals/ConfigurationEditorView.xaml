@@ -1,249 +1,346 @@
-﻿<UserControl x:Class="ResXManager.View.Visuals.ConfigurationEditorView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" mc:Ignorable="d"
-             xmlns:model="clr-namespace:ResXManager.Model;assembly=ResXManager.Model"
-             xmlns:converters="clr-namespace:ResXManager.View.Converters"
-             xmlns:properties="clr-namespace:ResXManager.View.Properties"
-             xmlns:dgx="urn:tom-englert.de/DataGridExtensions"
-             xmlns:globalization="clr-namespace:System.Globalization;assembly=mscorlib"
-             xmlns:toms="urn:TomsToolbox"
-             xmlns:system="clr-namespace:System;assembly=mscorlib"
-             xmlns:visuals="clr-namespace:ResXManager.View.Visuals"
-             xmlns:themes="clr-namespace:ResXManager.View.Themes"
-             xmlns:infrastructure="clr-namespace:ResXManager.Infrastructure;assembly=ResXManager.Infrastructure"
-             xmlns:styles="urn:TomsToolbox.Wpf.Styles"
-             xmlns:composition="urn:TomsToolbox.Composition"
-             xmlns:interactions="http://schemas.microsoft.com/xaml/behaviors"
-             d:DataContext="{d:DesignInstance visuals:ConfigurationEditorViewModel}">
-  <UserControl.Resources>
+﻿<UserControl
+    x:Class="ResXManager.View.Visuals.ConfigurationEditorView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:composition="urn:TomsToolbox.Composition"
+    xmlns:converters="clr-namespace:ResXManager.View.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dgx="urn:tom-englert.de/DataGridExtensions"
+    xmlns:globalization="clr-namespace:System.Globalization;assembly=mscorlib"
+    xmlns:infrastructure="clr-namespace:ResXManager.Infrastructure;assembly=ResXManager.Infrastructure"
+    xmlns:interactions="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:model="clr-namespace:ResXManager.Model;assembly=ResXManager.Model"
+    xmlns:properties="clr-namespace:ResXManager.View.Properties"
+    xmlns:styles="urn:TomsToolbox.Wpf.Styles"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
+    xmlns:themes="clr-namespace:ResXManager.View.Themes"
+    xmlns:toms="urn:TomsToolbox"
+    xmlns:visuals="clr-namespace:ResXManager.View.Visuals"
+    d:DataContext="{d:DesignInstance visuals:ConfigurationEditorViewModel}"
+    mc:Ignorable="d">
+    <UserControl.Resources>
 
-    <toms:ConfirmedCommandConverter x:Key="SortNodesByKeyCommandConverter" Executing="SortNodesByKeyCommandConverter_Executing" Error="CommandConverter_Error" />
+        <toms:ConfirmedCommandConverter
+            x:Key="SortNodesByKeyCommandConverter"
+            Error="CommandConverter_Error"
+            Executing="SortNodesByKeyCommandConverter_Executing" />
 
-    <Style TargetType="GroupBox" x:Key="GroupStyle" BasedOn="{StaticResource {x:Static styles:ResourceKeys.GroupBoxStyle}}">
-      <Setter Property="HeaderTemplate">
-        <Setter.Value>
-          <DataTemplate>
-            <ContentPresenter Content="{Binding}" TextElement.FontWeight="Bold" />
-          </DataTemplate>
-        </Setter.Value>
-      </Setter>
-      <Setter Property="Grid.IsSharedSizeScope" Value="True" />
-      <Setter Property="Focusable" Value="False" />
-    </Style>
+        <Style
+            x:Key="GroupStyle"
+            BasedOn="{StaticResource {x:Static styles:ResourceKeys.GroupBoxStyle}}"
+            TargetType="GroupBox">
+            <Setter Property="HeaderTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <ContentPresenter Content="{Binding}" TextElement.FontWeight="Bold" />
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Grid.IsSharedSizeScope" Value="True" />
+            <Setter Property="Focusable" Value="False" />
+        </Style>
 
-    <Style x:Key="EnumSelectorItemContainerStyle" TargetType="ListBoxItem">
-      <Setter Property="Focusable" Value="False" />
-      <Setter Property="Template">
-        <Setter.Value>
-          <ControlTemplate TargetType="ListBoxItem">
-            <RadioButton Margin="0,2" IsChecked="{Binding IsSelected, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                         Content="{TemplateBinding Content, Converter={x:Static toms:ObjectToDisplayNameConverter.Default}}"
-                         ToolTip="{TemplateBinding Content, Converter={x:Static toms:ObjectToDescriptionConverter.Default}}"
-                         Style="{DynamicResource {x:Static styles:ResourceKeys.RadioButtonStyle}}"
-                         Focusable="True" />
-          </ControlTemplate>
-        </Setter.Value>
-      </Setter>
-    </Style>
-  </UserControl.Resources>
+        <Style x:Key="EnumSelectorItemContainerStyle" TargetType="ListBoxItem">
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <RadioButton
+                            Margin="0,2"
+                            Content="{TemplateBinding Content,
+                                                      Converter={x:Static toms:ObjectToDisplayNameConverter.Default}}"
+                            Focusable="True"
+                            IsChecked="{Binding IsSelected, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                            Style="{DynamicResource {x:Static styles:ResourceKeys.RadioButtonStyle}}"
+                            ToolTip="{TemplateBinding Content,
+                                                      Converter={x:Static toms:ObjectToDescriptionConverter.Default}}" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
 
-  <ScrollViewer Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Width="800" HorizontalAlignment="Left" VerticalScrollBarVisibility="Auto">
-    <StackPanel Margin="10">
-      <GroupBox Header="{x:Static properties:Resources.ConfigurationScopeHeader}"
+    <ScrollViewer
+        Width="800"
+        HorizontalAlignment="Left"
+        Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
+        VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="10">
+            <GroupBox
+                Header="{x:Static properties:Resources.ConfigurationScopeHeader}"
                 Style="{StaticResource GroupStyle}"
                 Visibility="{Binding Configuration.IsScopeSupported, Converter={x:Static toms:BooleanToVisibilityConverter.Default}}">
-        <Control Focusable="False">
-          <Control.Template>
-            <ControlTemplate>
-              <Border x:Name="Background" Background="Yellow">
-                <TextBlock x:Name="Text" Margin="10" TextWrapping="Wrap" Text="{x:Static properties:Resources.EditDefaultConfigurationNotification}" Foreground="Black" />
-              </Border>
-              <ControlTemplate.Triggers>
-                <DataTrigger Binding="{Binding Configuration.Scope}" Value="{x:Static model:ConfigurationScope.Solution}">
-                  <Setter TargetName="Background" Property="Background" Value="Orange" />
-                  <Setter TargetName="Text" Property="Text" Value="{x:Static properties:Resources.EditSolutionConfigurationNotification}" />
-                </DataTrigger>
-              </ControlTemplate.Triggers>
-            </ControlTemplate>
-          </Control.Template>
-        </Control>
-      </GroupBox>
+                <Control Focusable="False">
+                    <Control.Template>
+                        <ControlTemplate>
+                            <Border x:Name="Background" Background="Yellow">
+                                <TextBlock
+                                    x:Name="Text"
+                                    Margin="10"
+                                    Foreground="Black"
+                                    Text="{x:Static properties:Resources.EditDefaultConfigurationNotification}"
+                                    TextWrapping="Wrap" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <DataTrigger Binding="{Binding Configuration.Scope}" Value="{x:Static model:ConfigurationScope.Solution}">
+                                    <Setter TargetName="Background" Property="Background" Value="Orange" />
+                                    <Setter TargetName="Text" Property="Text" Value="{x:Static properties:Resources.EditSolutionConfigurationNotification}" />
+                                </DataTrigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Control.Template>
+                </Control>
+            </GroupBox>
 
-      <GroupBox Header="{x:Static properties:Resources.Configuration_General}" Style="{StaticResource GroupStyle}">
-        <StackPanel Margin="10">
-          <StackPanel Orientation="Horizontal">
-            <TextBlock Text="{x:Static properties:Resources.NeutralResourceLanguageHeader}" VerticalAlignment="Center" />
-            <Decorator Width="5" />
-            <ComboBox Width="175" ItemsSource="{Binding Source={x:Static Member=infrastructure:CultureHelper.SpecificCultures}}"
-                      SelectedItem="{Binding Configuration.NeutralResourcesLanguage}" Style="{DynamicResource {x:Static styles:ResourceKeys.ComboBoxStyle}}">
-              <ComboBox.ItemTemplate>
-                <DataTemplate DataType="globalization:CultureInfo">
-                  <StackPanel Orientation="Horizontal">
-                    <Image Stretch="None" Source="{Binding Converter={composition:Import converters:CultureToImageSourceConverter}}" />
-                    <Decorator Width="5" />
-                    <TextBlock Text="{Binding Path=DisplayName}" VerticalAlignment="Center" />
-                  </StackPanel>
-                </DataTemplate>
-              </ComboBox.ItemTemplate>
-            </ComboBox>
-          </StackPanel>
-          <StackPanel Orientation="Horizontal">
-            <TextBlock Text="{x:Static properties:Resources.AppendPrefixValueFieldTypeLabel}" VerticalAlignment="Center" />
-            <Decorator Width="8" />
-            <ComboBox Width="175" ItemsSource="{Binding Source={x:Type model:PrefixFieldType}, Converter={x:Static toms:EnumToValuesConverter.Default}}"
-                     Style="{DynamicResource {x:Static styles:ResourceKeys.ComboBoxStyle}}" SelectedValue="{Binding Configuration.PrefixFieldType}"/>
-          </StackPanel>
-          <StackPanel Orientation="Horizontal">
-            <CheckBox IsChecked="{Binding Configuration.AutoApplyExistingTranslations}" Content="{x:Static properties:Resources.AutoApplyExistingTranslations}" Style="{DynamicResource {x:Static styles:ResourceKeys.CheckBoxStyle}}" />
-          </StackPanel>
-        </StackPanel>
-      </GroupBox>
+            <GroupBox Header="{x:Static properties:Resources.Configuration_General}" Style="{StaticResource GroupStyle}">
+                <StackPanel Margin="10">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock VerticalAlignment="Center" Text="{x:Static properties:Resources.NeutralResourceLanguageHeader}" />
+                        <Decorator Width="5" />
+                        <ComboBox
+                            Width="175"
+                            ItemsSource="{Binding Source={x:Static Member=infrastructure:CultureHelper.SpecificCultures}}"
+                            SelectedItem="{Binding Configuration.NeutralResourcesLanguage}"
+                            Style="{DynamicResource {x:Static styles:ResourceKeys.ComboBoxStyle}}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate DataType="globalization:CultureInfo">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="{Binding Converter={composition:Import converters:CultureToImageSourceConverter}}" Stretch="None" />
+                                        <Decorator Width="5" />
+                                        <TextBlock VerticalAlignment="Center" Text="{Binding Path=DisplayName}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock VerticalAlignment="Center" Text="{x:Static properties:Resources.AppendPrefixValueFieldTypeLabel}" />
+                        <Decorator Width="8" />
+                        <ComboBox
+                            Width="175"
+                            ItemsSource="{Binding Source={x:Type model:PrefixFieldType}, Converter={x:Static toms:EnumToValuesConverter.Default}}"
+                            SelectedValue="{Binding Configuration.PrefixFieldType}"
+                            Style="{DynamicResource {x:Static styles:ResourceKeys.ComboBoxStyle}}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox
+                            Content="{x:Static properties:Resources.AutoApplyExistingTranslations}"
+                            IsChecked="{Binding Configuration.AutoApplyExistingTranslations}"
+                            Style="{DynamicResource {x:Static styles:ResourceKeys.CheckBoxStyle}}" />
+                    </StackPanel>
+                </StackPanel>
+            </GroupBox>
 
-      <Decorator Height="5" />
-
-      <GroupBox Header="{x:Static properties:Resources.Configuration_LoadSaveHeader}" Style="{StaticResource GroupStyle}">
-        <Grid Margin="10" KeyboardNavigation.TabNavigation="Local">
-          <StackPanel>
-            <CheckBox IsChecked="{Binding Configuration.SaveFilesImmediatelyUponChange}" TabIndex="0"
-                      Style="{DynamicResource {x:Static styles:ResourceKeys.CheckBoxStyle}}"
-                      Content="{x:Static properties:Resources.SaveFilesImmediatelyUponChange}" />
-            <Decorator Height="10" />
-            <CheckBox IsChecked="{Binding Configuration.SortFileContentOnSave}" TabIndex="0"
-                      Style="{DynamicResource {x:Static styles:ResourceKeys.CheckBoxStyle}}"
-                      Content="{x:Static properties:Resources.SortNodesByKey}" />
             <Decorator Height="5" />
-            <StackPanel Orientation="Horizontal">
-              <Decorator Width="22" />
-              <TextBlock Text="{x:Static properties:Resources.SortBy}" VerticalAlignment="Center" />
-              <Decorator Width="8" />
-              <ComboBox Width="175" ItemsSource="{Binding Source={x:Type system:StringComparison}, Converter={x:Static toms:EnumToValuesConverter.Default}}"
-                        SelectedItem="{Binding Configuration.ResXSortingComparison}" Style="{DynamicResource {x:Static styles:ResourceKeys.ComboBoxStyle}}" />
-            </StackPanel>
-          </StackPanel>
-          <Button Padding="5,2" TabIndex="1" HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                  Content="{x:Static properties:Resources.SortAllFilesNow}"
-                  Command="{Binding SortNodesByKeyCommand, Converter={StaticResource SortNodesByKeyCommandConverter}}"
-                  Style="{DynamicResource {x:Static styles:ResourceKeys.ButtonStyle}}" />
-        </Grid>
-      </GroupBox>
 
-      <Decorator Height="5" />
+            <GroupBox Header="{x:Static properties:Resources.Configuration_LoadSaveHeader}" Style="{StaticResource GroupStyle}">
+                <Grid Margin="10" KeyboardNavigation.TabNavigation="Local">
+                    <StackPanel>
+                        <CheckBox
+                            Content="{x:Static properties:Resources.SaveFilesImmediatelyUponChange}"
+                            IsChecked="{Binding Configuration.SaveFilesImmediatelyUponChange}"
+                            Style="{DynamicResource {x:Static styles:ResourceKeys.CheckBoxStyle}}"
+                            TabIndex="0" />
+                        <Decorator Height="10" />
+                        <CheckBox
+                            Content="{x:Static properties:Resources.SortNodesByKey}"
+                            IsChecked="{Binding Configuration.SortFileContentOnSave}"
+                            Style="{DynamicResource {x:Static styles:ResourceKeys.CheckBoxStyle}}"
+                            TabIndex="0" />
+                        <Decorator Height="5" />
+                        <StackPanel Orientation="Horizontal">
+                            <Decorator Width="22" />
+                            <TextBlock VerticalAlignment="Center" Text="{x:Static properties:Resources.SortBy}" />
+                            <Decorator Width="8" />
+                            <ComboBox
+                                Width="175"
+                                ItemsSource="{Binding Source={x:Type system:StringComparison}, Converter={x:Static toms:EnumToValuesConverter.Default}}"
+                                SelectedItem="{Binding Configuration.ResXSortingComparison}"
+                                Style="{DynamicResource {x:Static styles:ResourceKeys.ComboBoxStyle}}" />
+                        </StackPanel>
+                    </StackPanel>
+                    <Button
+                        Padding="5,2"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        Command="{Binding SortNodesByKeyCommand, Converter={StaticResource SortNodesByKeyCommandConverter}}"
+                        Content="{x:Static properties:Resources.SortAllFilesNow}"
+                        Style="{DynamicResource {x:Static styles:ResourceKeys.ButtonStyle}}"
+                        TabIndex="1" />
+                </Grid>
+            </GroupBox>
 
-      <GroupBox Header="{x:Static properties:Resources.Configuration_FileCreationHeader}" Style="{StaticResource GroupStyle}">
-        <StackPanel Margin="10" KeyboardNavigation.TabNavigation="Local">
-          <CheckBox IsChecked="{Binding Configuration.AutoCreateNewLanguageFiles}" Content="{x:Static properties:Resources.AutoCreateNewLanguageFiles}" Style="{DynamicResource {x:Static styles:ResourceKeys.CheckBoxStyle}}" />
-          <Decorator Height="5" />
-          <CheckBox IsChecked="{Binding Configuration.ConfirmAddLanguageFile}" Content="{x:Static properties:Resources.ConfirmAddLanguage}" Style="{DynamicResource {x:Static styles:ResourceKeys.CheckBoxStyle}}" />
-        </StackPanel>
-      </GroupBox>
+            <Decorator Height="5" />
 
-      <Decorator Height="5" />
-
-      <GroupBox Header="{x:Static properties:Resources.Configuration_ExcelExportModeHeader}" Style="{StaticResource GroupStyle}">
-        <ListBox Margin="10" BorderThickness="0" Background="Transparent"
-                 ItemsSource="{Binding Source={x:Type model:ExcelExportMode}, Converter={x:Static toms:EnumToValuesConverter.Default}}"
-                 SelectedItem="{Binding Configuration.ExcelExportMode}"
-                 ItemContainerStyle="{StaticResource EnumSelectorItemContainerStyle}" />
-      </GroupBox>
-
-      <Decorator Height="5" />
-
-      <GroupBox Header="{x:Static properties:Resources.Configuration_XlifSupport}" Style="{StaticResource GroupStyle}">
-        <StackPanel Margin="10" KeyboardNavigation.TabNavigation="Local">
-          <CheckBox IsChecked="{Binding Configuration.EnableXlifSync}" Content="{x:Static properties:Resources.Configuration_EnableXlifSynchronization}" Style="{DynamicResource {x:Static styles:ResourceKeys.CheckBoxStyle}}" />
-        </StackPanel>
-      </GroupBox>
-
-      <Decorator Height="5" />
-
-      <GroupBox Header="{x:Static properties:Resources.Configuration_DuplicateKeyHandling}" Style="{StaticResource GroupStyle}">
-        <ListBox Margin="10" BorderThickness="0" Background="Transparent"
-                 ItemsSource="{Binding Source={x:Type model:DuplicateKeyHandling}, Converter={x:Static toms:EnumToValuesConverter.Default}}"
-                 SelectedItem="{Binding Configuration.DuplicateKeyHandling}"
-                 ItemContainerStyle="{StaticResource EnumSelectorItemContainerStyle}" />
-      </GroupBox>
-
-      <Decorator Height="5" />
-
-      <GroupBox Header="{x:Static properties:Resources.Configuration_Rules}" Style="{StaticResource GroupStyle}">
-        <ItemsControl Margin="10" BorderThickness="0" Background="Transparent"
-                      ItemsSource="{Binding Configuration.Rules.ConfigurableRules.Values}">
-          <ItemsControl.ItemTemplate>
-            <DataTemplate DataType="{x:Type model:IResourceTableEntryRuleConfig}">
-              <CheckBox Margin="0,2" IsChecked="{Binding IsEnabled, Mode=TwoWay}"
-                        Content="{Binding Converter={x:Static toms:ObjectToDisplayNameConverter.Default}}"
-                        ToolTip="{Binding Converter={x:Static toms:ObjectToDescriptionConverter.Default}}"
+            <GroupBox Header="{x:Static properties:Resources.Configuration_FileCreationHeader}" Style="{StaticResource GroupStyle}">
+                <StackPanel Margin="10" KeyboardNavigation.TabNavigation="Local">
+                    <CheckBox
+                        Content="{x:Static properties:Resources.AutoCreateNewLanguageFiles}"
+                        IsChecked="{Binding Configuration.AutoCreateNewLanguageFiles}"
                         Style="{DynamicResource {x:Static styles:ResourceKeys.CheckBoxStyle}}" />
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
-      </GroupBox>
+                    <Decorator Height="5" />
+                    <CheckBox
+                        Content="{x:Static properties:Resources.ConfirmAddLanguage}"
+                        IsChecked="{Binding Configuration.ConfirmAddLanguageFile}"
+                        Style="{DynamicResource {x:Static styles:ResourceKeys.CheckBoxStyle}}" />
+                </StackPanel>
+            </GroupBox>
 
-      <Decorator Height="5" />
+            <Decorator Height="5" />
 
-      <GroupBox Header="{x:Static properties:Resources.Configuration_EmptyValueHandlingHeader}" Style="{StaticResource GroupStyle}">
-        <CheckBox Margin="10"
-                  Style="{StaticResource {x:Static styles:ResourceKeys.CheckBoxStyle}}"
-                  Content="{x:Static properties:Resources.Configuration_EmptyValueHandling}"
-                  IsChecked="{Binding Configuration.RemoveEmptyEntries}" />
-      </GroupBox>
+            <GroupBox Header="{x:Static properties:Resources.Configuration_ExcelExportModeHeader}" Style="{StaticResource GroupStyle}">
+                <ListBox
+                    Margin="10"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    ItemContainerStyle="{StaticResource EnumSelectorItemContainerStyle}"
+                    ItemsSource="{Binding Source={x:Type model:ExcelExportMode}, Converter={x:Static toms:EnumToValuesConverter.Default}}"
+                    SelectedItem="{Binding Configuration.ExcelExportMode}" />
+            </GroupBox>
 
-      <Decorator Height="5" />
+            <Decorator Height="5" />
 
-      <GroupBox Header="{x:Static properties:Resources.Diagnostics}" Style="{StaticResource GroupStyle}">
-        <CheckBox Margin="10"
-                  Style="{StaticResource {x:Static styles:ResourceKeys.CheckBoxStyle}}"
-                  Content="{x:Static properties:Resources.ShowPerformanceTraces}"
-                  IsChecked="{Binding Configuration.ShowPerformanceTraces}" />
-      </GroupBox>
+            <GroupBox Header="{x:Static properties:Resources.Configuration_XlifSupport}" Style="{StaticResource GroupStyle}">
+                <StackPanel Margin="10" KeyboardNavigation.TabNavigation="Local">
+                    <CheckBox
+                        Content="{x:Static properties:Resources.Configuration_EnableXlifSynchronization}"
+                        IsChecked="{Binding Configuration.EnableXlifSync}"
+                        Style="{DynamicResource {x:Static styles:ResourceKeys.CheckBoxStyle}}" />
+                </StackPanel>
+            </GroupBox>
 
-      <Decorator Height="5" />
+            <Decorator Height="5" />
 
-      <GroupBox Header="{x:Static properties:Resources.DetectCodeReferences_Header}" Style="{StaticResource GroupStyle}">
-        <DataGrid ItemsSource="{Binding Configuration.CodeReferences.Items}"
-                  AutoGenerateColumns="False" CanUserReorderColumns="False" CanUserResizeRows="False"
-                  Style="{DynamicResource {x:Static styles:ResourceKeys.DataGridStyle}}"
-                  Margin="10" MinHeight="50" MaxHeight="250" MinWidth="700">
-          <DataGrid.Columns>
-            <DataGridTextColumn Header="{x:Static properties:Resources.FileExtensions}" Binding="{Binding Extensions}" Width="2*" />
-            <DataGridTextColumn Header="{x:Static properties:Resources.RegularExpression}" Binding="{Binding Expression}" Width="5*" />
-            <DataGridCheckBoxColumn Header="{x:Static properties:Resources.CaseSensitive}" Binding="{Binding IsCaseSensitive}" Width="*" />
-            <DataGridTextColumn Header="{x:Static properties:Resources.CommentToken}" Binding="{Binding SingleLineComment}" Width="2*" />
-          </DataGrid.Columns>
-          <interactions:Interaction.Behaviors>
-            <dgx:ExtendedStarSizeBehavior ColumnHeaderGripperToolTipStyle="{StaticResource {x:Static themes:ResourceKeys.ColumnHeaderGripperToolTipStyleKey}}" />
-          </interactions:Interaction.Behaviors>
-        </DataGrid>
-      </GroupBox>
+            <GroupBox Header="{x:Static properties:Resources.Configuration_DuplicateKeyHandling}" Style="{StaticResource GroupStyle}">
+                <ListBox
+                    Margin="10"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    ItemContainerStyle="{StaticResource EnumSelectorItemContainerStyle}"
+                    ItemsSource="{Binding Source={x:Type model:DuplicateKeyHandling}, Converter={x:Static toms:EnumToValuesConverter.Default}}"
+                    SelectedItem="{Binding Configuration.DuplicateKeyHandling}" />
+            </GroupBox>
 
-      <Decorator Height="5" />
+            <Decorator Height="5" />
 
-      <GroupBox Header="{x:Static properties:Resources.FileExclusionFilters_Header}" Style="{StaticResource GroupStyle}">
-        <DockPanel Margin="10">
-          <TextBlock VerticalAlignment="Center" DockPanel.Dock="Left">
-            <Run Text="{x:Static properties:Resources.RegularExpression}" /><Run Text=": " />
-          </TextBlock>
-          <TextBox Text="{Binding Configuration.FileExclusionFilter, UpdateSourceTrigger=PropertyChanged}" />
-        </DockPanel>
-      </GroupBox>
+            <GroupBox Header="{x:Static properties:Resources.Configuration_Rules}" Style="{StaticResource GroupStyle}">
+                <ItemsControl
+                    Margin="10"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    ItemsSource="{Binding Configuration.Rules.ConfigurableRules.Values}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type model:IResourceTableEntryRuleConfig}">
+                            <CheckBox
+                                Margin="0,2"
+                                Content="{Binding Converter={x:Static toms:ObjectToDisplayNameConverter.Default}}"
+                                IsChecked="{Binding IsEnabled, Mode=TwoWay}"
+                                Style="{DynamicResource {x:Static styles:ResourceKeys.CheckBoxStyle}}"
+                                ToolTip="{Binding Converter={x:Static toms:ObjectToDescriptionConverter.Default}}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </GroupBox>
 
-      <ItemsControl>
-        <ItemsControl.ItemTemplate>
-          <DataTemplate>
-            <StackPanel>
-              <Decorator Height="5" />
-              <GroupBox Header="{Binding Converter={x:Static toms:ObjectToDisplayNameConverter.Default}}" Style="{StaticResource GroupStyle}">
-                <ContentControl Content="{Binding}" Margin="10" />
-              </GroupBox>
-            </StackPanel>
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-        <interactions:Interaction.Behaviors>
-          <composition:ItemsControlCompositionBehavior RegionId="{x:Static infrastructure:RegionId.Configuration}" />
-        </interactions:Interaction.Behaviors>
-      </ItemsControl>
+            <Decorator Height="5" />
 
-    </StackPanel>
-  </ScrollViewer>
+            <GroupBox Header="{x:Static properties:Resources.Configuration_EmptyValueHandlingHeader}" Style="{StaticResource GroupStyle}">
+                <CheckBox
+                    Margin="10"
+                    Content="{x:Static properties:Resources.Configuration_EmptyValueHandling}"
+                    IsChecked="{Binding Configuration.RemoveEmptyEntries}"
+                    Style="{StaticResource {x:Static styles:ResourceKeys.CheckBoxStyle}}" />
+            </GroupBox>
+
+            <Decorator Height="5" />
+
+            <GroupBox Header="{x:Static properties:Resources.Diagnostics}" Style="{StaticResource GroupStyle}">
+                <CheckBox
+                    Margin="10"
+                    Content="{x:Static properties:Resources.ShowPerformanceTraces}"
+                    IsChecked="{Binding Configuration.ShowPerformanceTraces}"
+                    Style="{StaticResource {x:Static styles:ResourceKeys.CheckBoxStyle}}" />
+            </GroupBox>
+
+            <Decorator Height="5" />
+
+            <GroupBox Header="{x:Static properties:Resources.DetectCodeReferences_Header}" Style="{StaticResource GroupStyle}">
+                <DataGrid
+                    MinWidth="700"
+                    MinHeight="50"
+                    MaxHeight="250"
+                    Margin="10"
+                    AutoGenerateColumns="False"
+                    CanUserReorderColumns="False"
+                    CanUserResizeRows="False"
+                    ItemsSource="{Binding Configuration.CodeReferences.Items}"
+                    Style="{DynamicResource {x:Static styles:ResourceKeys.DataGridStyle}}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn
+                            Width="2*"
+                            Binding="{Binding Extensions}"
+                            Header="{x:Static properties:Resources.FileExtensions}" />
+                        <DataGridTextColumn
+                            Width="5*"
+                            Binding="{Binding Expression}"
+                            Header="{x:Static properties:Resources.RegularExpression}" />
+                        <DataGridCheckBoxColumn
+                            Width="*"
+                            Binding="{Binding IsCaseSensitive}"
+                            Header="{x:Static properties:Resources.CaseSensitive}" />
+                        <DataGridTextColumn
+                            Width="2*"
+                            Binding="{Binding SingleLineComment}"
+                            Header="{x:Static properties:Resources.CommentToken}" />
+                    </DataGrid.Columns>
+                    <interactions:Interaction.Behaviors>
+                        <dgx:ExtendedStarSizeBehavior ColumnHeaderGripperToolTipStyle="{StaticResource {x:Static themes:ResourceKeys.ColumnHeaderGripperToolTipStyleKey}}" />
+                    </interactions:Interaction.Behaviors>
+                </DataGrid>
+            </GroupBox>
+
+            <Decorator Height="5" />
+
+            <GroupBox Header="{x:Static properties:Resources.FileExclusionFilters_Header}" Style="{StaticResource GroupStyle}">
+                <DockPanel Margin="10">
+                    <TextBlock VerticalAlignment="Center" DockPanel.Dock="Left">
+                        <Run Text="{x:Static properties:Resources.RegularExpression}" /><Run Text=": " />
+                    </TextBlock>
+                    <TextBox Text="{Binding Configuration.FileExclusionFilter, UpdateSourceTrigger=PropertyChanged}" />
+                </DockPanel>
+            </GroupBox>
+
+            <ItemsControl>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <Decorator Height="5" />
+                            <GroupBox Header="{Binding Converter={x:Static toms:ObjectToDisplayNameConverter.Default}}" Style="{StaticResource GroupStyle}">
+                                <ContentControl Margin="10" Content="{Binding}" />
+                            </GroupBox>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <interactions:Interaction.Behaviors>
+                    <composition:ItemsControlCompositionBehavior RegionId="{x:Static infrastructure:RegionId.Configuration}" />
+                </interactions:Interaction.Behaviors>
+            </ItemsControl>
+
+
+            <Decorator Height="5" />
+
+            <GroupBox Header="Ignored Words (automated translation)" Style="{StaticResource GroupStyle}">
+                <DockPanel Margin="10">
+                    <TextBlock VerticalAlignment="Center" DockPanel.Dock="Left">
+                        <Run Text="Ignored keywords file" />
+                        <Run Text=": " />
+                    </TextBlock>
+                    <TextBox Text="{Binding Configuration.IgnoreListLocation, UpdateSourceTrigger=PropertyChanged}" />
+                </DockPanel>
+            </GroupBox>
+
+
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

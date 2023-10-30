@@ -6,7 +6,11 @@
     using System.Collections.Specialized;
     using System.ComponentModel;
     using System.Composition;
+    using System.Diagnostics;
+    using System.Globalization;
+    using System.IO;
     using System.Linq;
+    using System.Text;
     using System.Windows.Input;
     using System.Windows.Threading;
 
@@ -161,6 +165,7 @@
                 return;
             }
 
+
             var itemsToTranslate = GetItemsToTranslate(_resourceViewModel.ResourceTableEntries, sourceCulture, SelectedTargetCultures, Configuration.EffectiveTranslationPrefix);
 
             Items = new ObservableCollection<ITranslationItem>(itemsToTranslate);
@@ -178,8 +183,29 @@
             TranslatorHost.StartSession(sourceCulture.Culture, Configuration.NeutralResourcesLanguage, itemsToTranslate);
         }
 
+        private List<string> GetIgnoredWords()
+        {
+            var ignoredList = new List<string>();
+              
+            if (string.IsNullOrEmpty(Configuration.IgnoreListLocation))
+            {
+                return ignoredList;
+            }
+            FileInfo fi = new FileInfo(Configuration.IgnoreListLocation);
+            if (!fi.Exists)
+            {
+                return ignoredList;
+            }
+
+            var allLines = File.ReadAllLines(Configuration.IgnoreListLocation);
+            return allLines.ToList();
+        }
+
         private ICollection<ITranslationItem> GetItemsToTranslate(IEnumerable<ResourceTableEntry> resourceTableEntries, CultureKey? sourceCulture, ICollection<CultureKey> targetCultures, string? translationPrefix)
         {
+
+            List<string> ignoredWords = GetIgnoredWords();
+
             // #1: all entries that are not invariant and have a valid value in the source culture
             var allEntriesWithSourceValue = resourceTableEntries
                 .Where(entry => !entry.IsInvariant)
@@ -209,7 +235,7 @@
             // ! item.Source is checked in #1
             var itemsToTranslate = allEntries.AsParallel()
                 .Where(item => !HasTranslation(item.Target) && !item.Entry.IsItemInvariant.GetValue(item.TargetCulture))
-                .Select(item => new TranslationItem(item.Entry, item.Source!, item.TargetCulture))
+                .Select(item => new TranslationItem(item.Entry, PatchWithIgnoredWords(item.Source!, ignoredWords), item.TargetCulture))
                 .ToArray();
 
             if (Configuration.AutoApplyExistingTranslations)
@@ -241,6 +267,33 @@
 
             return itemsToTranslate;
         }
+
+        protected string PatchWithIgnoredWords(string input, List<string> ignoredWords)
+        {
+            foreach (string ignoredWord in ignoredWords)
+            {
+                string lowerKeyword = ignoredWord.ToLower(CultureInfo.InvariantCulture);
+                int startIndex = 0;
+
+                while (startIndex < input.Length)
+                {
+                    int index = input.IndexOf(lowerKeyword, startIndex, StringComparison.OrdinalIgnoreCase);
+                    if (index == -1)
+                    {
+                        break;
+                    }
+
+                    string originalKeyword = input.Substring(index, ignoredWord.Length);
+                    string tag = $"<ignoredContent>{originalKeyword}</ignoredContent>";
+
+                    input = input.Substring(0, index) + tag + input.Substring(index + originalKeyword.Length);
+                    startIndex = index + tag.Length;
+                }
+            }
+            return input;
+        }
+
+
 
         private void SelectedTargetCultures_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {

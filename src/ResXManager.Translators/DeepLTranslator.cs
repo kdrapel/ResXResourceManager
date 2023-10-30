@@ -89,6 +89,8 @@
                     {
                         "target_lang", DeepLLangCode(targetCulture),
                         "source_lang", DeepLLangCode(translationSession.SourceLanguage),
+                        "tag_handling", "xml",
+                        "ignore_tags", "ignoredContent",
                         "auth_key", ApiKey
                     });
 
@@ -109,11 +111,16 @@
                         foreach (var tuple in sourceItems.Zip(response.Translations ?? Array.Empty<Translation>(),
                                      (a, b) => new Tuple<ITranslationItem, string?>(a, b.Text)))
                         {
-                            tuple.Item1.Results.Add(new TranslationMatch(this, tuple.Item2, Ranking));
+                            tuple.Item1.Results.Add(new TranslationMatch(this, RemoveIgnoredWordsTags(tuple.Item2!), Ranking));
                         }
                     }).ConfigureAwait(false);
                 }
             }
+        }
+
+        private string RemoveIgnoredWordsTags(string item2)
+        {
+            return item2.Replace("<ignoredContent>", "").Replace("</ignoredContent>", "");
         }
 
         private static string DeepLLangCode(CultureInfo cultureInfo)
